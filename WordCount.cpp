@@ -42,8 +42,8 @@ int WordCount::getWordCount(std::string word) const {
 	string valid = makeValidWord(word);
 	size_t index = hash(valid);
 	for(size_t i = 0; i < table[index].size(); i++) {
-		if(const auto &word_pair : table[i]) {
-			return word_pair.second;
+		if(table[index][i].first == valid) {
+			return table[index][i].second;
 		}
 	}
 	return 0;
