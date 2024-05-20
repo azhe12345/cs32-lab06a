@@ -42,43 +42,49 @@ int WordCount::getWordCount(std::string word) const {
 	string valid = makeValidWord(word);
 	size_t index = hash(valid);
 	for(size_t i = 0; i < table[index].size(); i++) {
-		if(table[index][i].first == valid) {
-			return table[index][i].second;
+		if(const auto &word_pair : table[i]) {
+			return word_pair.second;
 		}
 	}
 	return 0;
 }
 	
 int WordCount::incrWordCount(std::string word) {
-	string newWord = makeValidWord(word);
-	if(newWord=="")
-		return 0;
-	size_t index = hash(newWord);
-	for(size_t i = 0; i < table[index].size(); i++) {
-		if(table[index][i].first == newWord) {
-			table[index][i].second++;
-			return table[index][i].second;
-		}
-	}
-	pair<string, int> newPair = make_pair(newWord, 1);
-	table[index].push_back(newPair);
-	return 1;
+	std::string newWord = makeValidWord(word);
+    if (newWord.empty()) {
+        return 0;
+    }
+
+    size_t index = hash(newWord);
+    for (auto& pair : table[index]) {
+        if (pair.first == newWord) {
+            return ++pair.second;
+        }
+    }
+
+    table[index].push_back(newWord, 1);
+    return 1;
 }
 
 int WordCount::decrWordCount(std::string word) {
-	string newWord = makeValidWord(word);
-	size_t index = hash(newWord);
-	for(size_t i = 0; i < table[index].size(); i++) {
-		if(table[index][i].first == newWord) {
-			if(table[index][i].second == 1) {
-				table[index].erase(table[index].begin() + i);
-				return 0;
-			}
-			table[index][i].second--;
-			return table[index][i].second;
-		}
-	}
-	return -1;
+	 std::string validatedWord = makeValidWord(word);
+    if (validatedWord.empty()) {
+        return -1;
+    }
+
+    size_t index = hash(validatedWord);
+    for (size_t i = 0; i < table[index].size(); ++i) {
+        if (table[index][i].first == validatedWord) {
+            if (table[index][i].second == 1) {
+                table[index].erase(table[index].begin() + i);
+                return 0;
+            } else {
+                return --table[index][i].second;
+            }
+        }
+    }
+
+    return -1;
 }
 
 bool WordCount::isWordChar(char c) {
