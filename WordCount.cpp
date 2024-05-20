@@ -61,7 +61,7 @@ int WordCount::incrWordCount(std::string word) {
             return ++pair.second;
         }
     }
-	pair<string, int> newPair = make_pair(newWord, 1)
+	pair<string, int> newPair = make_pair(newWord, 1);
     table[index].push_back(newPair);
     return 1;
 }
