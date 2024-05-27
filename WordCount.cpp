@@ -158,7 +158,7 @@ bool sortbysec(const std::pair<std::string, int> &a, const std::pair<std::string
     }
     return a.first < b.first;
 }
-void WordCount::dumpWordsSortedByOccurrence(std::ostream &out) const {
+void WordCount::dumpWordsSortedByOccurence(std::ostream &out) const {
     if (getTotalWords() == 0) {
         return;
     }
@@ -180,7 +180,7 @@ void WordCount::dumpWordsSortedByOccurrence(std::ostream &out) const {
         out << entry.first << ", " << entry.second << "\n";
     }
 }
-void WordCount::addAllWords(const std::string &text) {
+void WordCount::addAllWords(const std::string text) {
     std::string newWord;
     for (size_t i = 0; i < text.size(); ++i) {
         if (text.at(i) == ' ' || text.at(i) == '\n' || text.at(i) == '\t' || i == text.size() - 1) {
