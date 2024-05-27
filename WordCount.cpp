@@ -130,3 +130,69 @@ std::string WordCount::makeValidWord(std::string word) {
 	}
 	return validword;
 }
+void WordCount::dumpWordsSortedByWord(std::ostream &out) const {
+    if (getTotalWords() == 0) {
+        return;
+    }
+
+    std::vector<std::pair<std::string, int>> sortedTable;
+
+    // Collect all words and their counts into the sortedTable vector
+    for (size_t i = 0; i < CAPACITY; ++i) {
+        for (size_t j = 0; j < table[i].size(); ++j) {
+            sortedTable.push_back(table[i][j]);
+        }
+    }
+
+    // Sort the vector alphabetically by the word
+    std::sort(sortedTable.begin(), sortedTable.end());
+
+    // Output the sorted words and their counts
+    for (const auto &entry : sortedTable) {
+        out << entry.first << ", " << entry.second << "\n";
+    }
+}
+bool sortbysec(const std::pair<std::string, int> &a, const std::pair<std::string, int> &b) {
+    if (a.second != b.second) {
+        return a.second < b.second;
+    }
+    return a.first < b.first;
+}
+void WordCount::dumpWordsSortedByOccurrence(std::ostream &out) const {
+    if (getTotalWords() == 0) {
+        return;
+    }
+
+    std::vector<std::pair<std::string, int>> sortedTable;
+
+    // Collect all words and their counts into the sortedTable vector
+    for (size_t i = 0; i < CAPACITY; ++i) {
+        for (const auto &entry : table[i]) {
+            sortedTable.push_back(entry);
+        }
+    }
+
+    // Sort the vector by occurrence (using the custom sortbysec function)
+    std::sort(sortedTable.begin(), sortedTable.end(), sortbysec);
+
+    // Output the sorted words and their counts
+    for (const auto &entry : sortedTable) {
+        out << entry.first << ", " << entry.second << "\n";
+    }
+}
+void WordCount::addAllWords(const std::string &text) {
+    std::string newWord;
+    for (size_t i = 0; i < text.size(); ++i) {
+        if (text.at(i) == ' ' || text.at(i) == '\n' || text.at(i) == '\t' || i == text.size() - 1) {
+            if (i == text.size() - 1 && (text.at(i) != ' ' && text.at(i) != '\n' && text.at(i) != '\t')) {
+                newWord += text.at(i);
+            }
+            if (!newWord.empty()) {
+                incrWordCount(newWord);
+                newWord.clear();
+            }
+        } else {
+            newWord += text.at(i);
+        }
+    }
+}
