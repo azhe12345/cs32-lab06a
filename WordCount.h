@@ -1,198 +1,117 @@
-// WordCount.cpp
+// WordCount.h
 
-#include "WordCount.h"
+#ifndef WORDCOUNT_H
+#define WORDCOUNT_H
 
-using namespace std;
+#include <iostream>
+#include <string>
+#include <vector>
+#include <utility>
+#include <algorithm>
 
-// Default constructor
-WordCount::WordCount() {}
+class WordCount {
+public:
+  WordCount();
+  // Default Constructor
 
-// Simple hash function. Do not modify.
-size_t WordCount::hash(std::string word) const {
-	size_t accumulator = 0;
-	for (size_t i = 0; i < word.size(); i++) {
-		accumulator += word.at(i);
-	}
-	return accumulator % CAPACITY;
-}
+  int getTotalWords() const;
+  // Return total number of word occurrences (for all words) in the
+  // hash table.
 
-int WordCount::getTotalWords() const {
-	int totalWords = 0; // Initialize a counter to keep track of the total words
-    for (size_t i = 0; i < CAPACITY; ++i) { // Loop through each bucket in the hash table
-        for (const auto &word_pair : table[i]) { // Loop through each pair in the current bucket
-            totalWords += word_pair.second; // Add the number of occurrences of the current word to the total count
-        }
-    }
-    return totalWords; // Return the computed total
-}
+  int getNumUniqueWords() const;
+  // Return total number of unique words that exist in the hash table.
+  // Note that multiple occurrences of a word is considered one unique
+  // word.
 
-int WordCount::getNumUniqueWords() const {
-	int totalWords = 0; // Initialize a counter to keep track of the total words
-    for (size_t i = 0; i < CAPACITY; ++i) { // Loop through each bucket in the hash table
-        for (const auto &word_pair : table[i]) { // Loop through each pair in the current bucket
-            if(word_pair.second!=0){
-				totalWords++;
-			} // Add the number of occurrences of the current word to the total count
-        }
-    }
-    return totalWords;
-}
+  int getWordCount(std::string word) const;
+  // Return the number of occurences for a specific word.
+  // You may not assume the parameter is a valid word and must
+  // strip / convert to lower case before looking in the hash table.
+  // If the word does not exist in the table, return 0
 
-int WordCount::getWordCount(std::string word) const {
-	string valid = makeValidWord(word);
-	size_t index = hash(valid);
-	for(size_t i = 0; i < table[index].size(); i++) {
-		if(table[index][i].first == valid) {
-			return table[index][i].second;
-		}
-	}
-	return 0;
-}
-	
-int WordCount::incrWordCount(std::string word) {
-	std::string newWord = makeValidWord(word);
-    if (newWord.empty()) {
-        return 0;
-    }
+  int incrWordCount(std::string word);
+  // Update the hash table by incrementing the number of occurences for
+  // the word. You MAY NOT assume the parameter word is a valid word.
+  // Words must be hashed and stored containing all lower case
+  // characters.
+  // * If the word is not in the table, then add it with the number
+  // of occurences equal to 1.
+  // * If the word was added, this method updates the number of occurences
+  // of the word in the hash table, and returns the current number of
+  // occurences of the word after it was added.
 
-    size_t index = hash(newWord);
-    for (auto& pair : table[index]) {
-        if (pair.first == newWord) {
-            return ++pair.second;
-        }
-    }
-	pair<string, int> newPair = make_pair(newWord, 1);
-    table[index].push_back(newPair);
-    return 1;
-}
+  int decrWordCount(std::string word);
+  // Update the hash table by decrementing the number of occurences for
+  // the word. You MAY NOT assume the parameter word is a valid word.
+  // The word must be converted to a valid word containing all
+  // lower case characters to be searched through the hash table.
+  // * If an entry for the word exists and the number of occurences is > 1,
+  // then the number of occurences for this word entry is updated and this
+  // method returns the updated number of occurences.
+  // * If the number of occurences for the word is 1, then the key / value
+  // pair entry in the hash table is removed from the vector and 0 is
+  // returned.
+  // * If the word does not exist, then this method returns -1.
 
-int WordCount::decrWordCount(std::string word) {
-	 std::string validatedWord = makeValidWord(word);
-    if (validatedWord.empty()) {
-        return -1;
-    }
+  static bool isWordChar(char c);
+  // Useful as a helper method in your code.
+  // Returns true if c is a valid word character defined as either
+  // a lower-case or upper-case alpha char.
 
-    size_t index = hash(validatedWord);
-    for (size_t i = 0; i < table[index].size(); ++i) {
-        if (table[index][i].first == validatedWord) {
-            if (table[index][i].second == 1) {
-                table[index].erase(table[index].begin() + i);
-                return 0;
-            } else {
-                return --table[index][i].second;
-            }
-        }
-    }
+  static std::string makeValidWord(std::string word);
+  // Words cannot contain any digits, or special characters EXCEPT for
+  // hyphens (-) and apostrophes (') that occur in the middle of a
+  // valid word (the first and last characters of a word must be an alpha
+  // character). All upper case characters in the word should be convertd
+  // to lower case.
+  // For example, "can't" and "good-hearted" are considered valid words.
+  // "12mOnkEYs-$" will be converted to "monkeys".
+  // "Pa55ive" will be converted to "paive".
+  // "$money!" will be converted to "money"
+  // "C++" will be converted to "c"
+  // "$1wo,rd-%#" will be converted to "word"
+  // "'nuff-said-" will be converted to "nuff-said".
 
-    return -1;
-}
 
-bool WordCount::isWordChar(char c) {
-	if((c>= 'a'&& c <= 'z')|| (c <='Z' &&  c>='A')){
-		return true;
-	}
-	return false;
-}
+////// NEW FUNCTIONS FOR LAB07a //////
+  void dumpWordsSortedByWord(std::ostream &out) const;
+  // dump each word,count pair as CSV to std::ostream, sorted by word in
+  // descending lexicographical order based on ASCII values. Each word,count
+  // pair will be in its own line with as: word,numOccurence\n
+  // For example: "Sentence is a sentence" will be:
+  // sentence,2
+  // is,1
+  // a,1
 
-std::string WordCount::makeValidWord(std::string word) {
-	string validword = "";
-	if (word.size() == 0){
-		return validword;
-	}
-	for(size_t i = 0; i < word.size(); i++){
-		if(isWordChar(word.at(i))==false && word.at(i)!= '-' && word.at(i)!='\''){
-			continue;
-		}
-		validword+= tolower(word.at(i));
+  void dumpWordsSortedByOccurence(std::ostream &out) const;
+  // dump each word,count pair as CSV to std::ostream, sorted by occurence in
+  // ascending order. In the event of a tie, ordering is defined by the
+  // ascending lexicographical order of the word key based on ASCII value.
+  // Each word count pair will be in its own line with as word,numOccurence\n
+  // For example, "Sentence is a fun fun sentence" will be:
+  // a,1
+  // is,1
+  // fun,2
+  // sentence,2
 
-	}
-	if(validword.size() == 0){
-		return validword;
-	}
-	bool first = false;
-	
-	while(first == false && validword.size()>0){
-		if(validword.at(0) == '-' || validword.at(0) == '\''){
-			validword.erase(0,1);
-		}
-		else{
-			first = true;
-		}
-	}
-	bool end = false;
-	while(end == false && validword.size()>0){
-		if(validword.at(validword.size()-1) == '-' || validword.at(validword.size()-1) == '\''){
-			validword.erase(validword.size()-1,1);
-		}
-		else{
-			end = true;
-		}
-	}
-	return validword;
-}
-void WordCount::dumpWordsSortedByWord(std::ostream &out) const {
-    if (getTotalWords() == 0) {
-        return;
-    }
+  void addAllWords(std::string text);
+  // parse out string text into individual words, and add each word
+  // to the hash table. You may assume that words are always
+  // separated by whitespace characters (' ','\n','\t') within the
+  // string text.
 
-    std::vector<std::pair<std::string, int>> sortedTable;
+private:
+  const static size_t CAPACITY = 100;
+  // capacity for the hash table array
 
-    // Collect all words and their counts into the sortedTable vector
-    for (size_t i = 0; i < CAPACITY; ++i) {
-        for (size_t j = 0; j < table[i].size(); ++j) {
-            sortedTable.push_back(table[i][j]);
-        }
-    }
+  std::vector<std::pair<std::string, int> > table[CAPACITY];
+  // hash table array of vectors. Each index in the array will contain
+  // a vector. Each element in the vector contains a <string, int>
+  // pair where the string value represents a unique word and the int
+  // value represents the number of occurences for that word.
 
-    // Sort the vector alphabetically by the word
-    std::sort(sortedTable.begin(), sortedTable.end());
+  size_t hash(std::string word) const;
+  // Hash function that will return an index for the hash table.
+};
 
-    // Output the sorted words and their counts
-    for (const auto &entry : sortedTable) {
-        out << entry.first << ", " << entry.second << "\n";
-    }
-}
-bool sortbysec(const std::pair<std::string, int> &a, const std::pair<std::string, int> &b) {
-    if (a.second != b.second) {
-        return a.second < b.second;
-    }
-    return a.first < b.first;
-}
-void WordCount::dumpWordsSortedByOccurence(std::ostream &out) const {
-    if (getTotalWords() == 0) {
-        return;
-    }
-
-    std::vector<std::pair<std::string, int>> sortedTable;
-
-    // Collect all words and their counts into the sortedTable vector
-    for (size_t i = 0; i < CAPACITY; ++i) {
-        for (const auto &entry : table[i]) {
-            sortedTable.push_back(entry);
-        }
-    }
-
-    // Sort the vector by occurrence (using the custom sortbysec function)
-    std::sort(sortedTable.begin(), sortedTable.end(), sortbysec);
-
-    // Output the sorted words and their counts
-    for (const auto &entry : sortedTable) {
-        out << entry.first << ", " << entry.second << "\n";
-    }
-}
-void WordCount::addAllWords(const std::string text) {
-    std::string newWord;
-    for (size_t i = 0; i < text.size(); ++i) {
-        if (text.at(i) == ' ' || text.at(i) == '\n' || text.at(i) == '\t' || i == text.size() - 1) {
-            if (i == text.size() - 1 && (text.at(i) != ' ' && text.at(i) != '\n' && text.at(i) != '\t')) {
-                newWord += text.at(i);
-            }
-            if (!newWord.empty()) {
-                incrWordCount(newWord);
-                newWord.clear();
-            }
-        } else {
-            newWord += text.at(i);
-        }
-    }
-}
+#endif // WORDCOUNT_H
