@@ -137,7 +137,7 @@ void WordCount::dumpWordsSortedByWord(std::ostream &out) const {
         }
     }
     sort(sortedTable.begin(), sortedTable.end(), [](const pair<string, int>& a, const pair<string, int>& b) {
-        return a.first < b.first;
+        return a.first > b.first;
     });
     for (const auto& entry : sortedTable) {
         out << entry.first << "," << entry.second << "\n";
