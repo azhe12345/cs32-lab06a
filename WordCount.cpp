@@ -95,40 +95,36 @@ bool WordCount::isWordChar(char c) {
 }
 
 std::string WordCount::makeValidWord(std::string word) {
-	string validword = "";
-	if (word.size() == 0){
-		return validword;
-	}
-	for(size_t i = 0; i < word.size(); i++){
-		if(isWordChar(word.at(i))==false && word.at(i)!= '-' && word.at(i)!='\''){
-			continue;
-		}
-		validword+= tolower(word.at(i));
-
-	}
-	if(validword.size() == 0){
-		return validword;
-	}
-	bool first = false;
-	
-	while(first == false && validword.size()>0){
-		if(validword.at(0) == '-' || validword.at(0) == '\''){
-			validword.erase(0,1);
-		}
-		else{
-			first = true;
-		}
-	}
-	bool end = false;
-	while(end == false && validword.size()>0){
-		if(validword.at(validword.size()-1) == '-' || validword.at(validword.size()-1) == '\''){
-			validword.erase(validword.size()-1,1);
-		}
-		else{
-			end = true;
-		}
-	}
-	return validword;
+    string validword = "";
+    if (word.size() == 0){
+        return validword;
+    }
+    for(size_t i = 0; i < word.size(); i++){
+        if(!isWordChar(word.at(i)) && word.at(i) != '-' && word.at(i) != '\''){
+            continue;
+        }
+        validword += tolower(word.at(i));
+    }
+    if(validword.size() == 0){
+        return validword;
+    }
+    bool first = false;
+    while(!first && validword.size() > 0){
+        if(validword.at(0) == '-' || validword.at(0) == '\''){
+            validword.erase(0,1);
+        } else {
+            first = true;
+        }
+    }
+    bool end = false;
+    while(!end && validword.size() > 0){
+        if(validword.at(validword.size() - 1) == '-' || validword.at(validword.size() - 1) == '\''){
+            validword.erase(validword.size() - 1, 1);
+        } else {
+            end = true;
+        }
+    }
+    return validword;
 }
 void WordCount::dumpWordsSortedByWord(std::ostream &out) const {
     if (getTotalWords() == 0) {
