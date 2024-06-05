@@ -171,7 +171,7 @@ void WordCount::dumpWordsSortedByOccurence(std::ostream &out) const {
     }
 }
 
-void WordCount::addAllWords(const std::string& text) {
+void WordCount::addAllWords(std::string text) {
     string newWord;
     for (char ch : text) {
         if (isspace(ch)) {
